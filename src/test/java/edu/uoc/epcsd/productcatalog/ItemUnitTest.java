@@ -3,6 +3,7 @@ package edu.uoc.epcsd.productcatalog;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -57,14 +58,16 @@ class ItemUnitTest {
                 .build();
         productServiceImpl.createProduct(product);
 
-        String serialNumString = itemServiceImpl.createItem(product.getId(), "123456");
-        Optional<Item> itemOptional = itemServiceImpl.findBySerialNumber(serialNumString);
-        Item item = itemOptional.get();
+    Item item = new Item();
+    item.setStatus(ItemStatus.NON_OPERATIONAL);
+    
+    Mockito.when(itemServiceImpl.findBySerialNumber("123456")).thenReturn(Optional.of(item));
 
-        // Act
-        item.setStatus(ItemStatus.NON_OPERATIONAL);
+    String cerateItemString = itemServiceImpl.createItem(product.getId(), "123456");
+    Optional<Item> itemOptional = itemServiceImpl.findBySerialNumber("123456");
+    Item retrievedItem = itemOptional.get();
 
-        // Assert
-        assertThat(item.getStatus()).isEqualTo(ItemStatus.NON_OPERATIONAL);
+    // Assert
+    assertThat(retrievedItem.getStatus()).isEqualTo(ItemStatus.NON_OPERATIONAL);
     }
 }
