@@ -1,0 +1,25 @@
+# Utilizar una imagen base con Java 11
+FROM adoptopenjdk:11-jdk-hotspot AS build
+
+
+# Copiar el JAR de tu aplicación a la imagen
+COPY epcsd-spring-2023-notification/target/notification-0.0.1-SNAPSHOT.jar notification-0.0.1-SNAPSHOT.jar
+# Configura el punto de entrada de Docker para ejecutar tu aplicación
+ENTRYPOINT ["java","-jar","notification-0.0.1-SNAPSHOT.jar"]
+
+
+# Copiar el JAR de tu aplicación a la imagen
+COPY epcsd-spring-2023-productcatalog/target/productcatalog-0.0.1-SNAPSHOT.jar productcatalog-0.0.1-SNAPSHOT.jar
+# Configura el punto de entrada de Docker para ejecutar tu aplicación
+ENTRYPOINT ["java","-jar","productcatalog-0.0.1-SNAPSHOT.jar"]
+
+
+# Copiar el JAR de tu aplicación a la imagen
+COPY epcsd-spring-2023-user/target/productcatalog-0.0.1-SNAPSHOT.jar productcatalog-0.0.1-SNAPSHOT.jar
+# Configura el punto de entrada de Docker para ejecutar tu aplicación
+ENTRYPOINT ["java","-jar","productcatalog-0.0.1-SNAPSHOT.jar"]
+
+
+
+
+
