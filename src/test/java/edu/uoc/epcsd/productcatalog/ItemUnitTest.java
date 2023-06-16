@@ -47,13 +47,13 @@ class ItemUnitTest {
         
         Category category = Category.builder()
                 .id(1L)
-                .name("Electronics")
+                .name("Category1")
                 .build();
         categoryServiceImpl.createCategory(category);
 
         Product product = Product.builder()
                 .id(1L)
-                .name("Laptop")
+                .name("Product1")
                 .categoryId(category.getId())
                 .build();
         productServiceImpl.createProduct(product);
@@ -63,7 +63,7 @@ class ItemUnitTest {
     
     Mockito.when(itemServiceImpl.findBySerialNumber("123456")).thenReturn(Optional.of(item));
 
-    String cerateItemString = itemServiceImpl.createItem(product.getId(), "123456");
+    itemServiceImpl.createItem(product.getId(), "123456");
     Optional<Item> itemOptional = itemServiceImpl.findBySerialNumber("123456");
     Item retrievedItem = itemOptional.get();
 

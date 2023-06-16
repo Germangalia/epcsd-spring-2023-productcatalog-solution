@@ -1,55 +1,59 @@
 package edu.uoc.epcsd.productcatalog;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import edu.uoc.epcsd.productcatalog.domain.Product;
+import edu.uoc.epcsd.productcatalog.domain.repository.ProductRepository;
+import edu.uoc.epcsd.productcatalog.domain.service.ProductServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.boot.test.context.SpringBootTest;
-
-import edu.uoc.epcsd.productcatalog.domain.Product;
-import edu.uoc.epcsd.productcatalog.domain.repository.ProductRepository;
-import edu.uoc.epcsd.productcatalog.exception.ProductNotFoundException;
-import edu.uoc.epcsd.productcatalog.service.ProductCatalogService;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class ProductCatalogServiceUnitTest {
-    @Mock
+public class ProductCatalogServiceUnitTest {
+
+    @MockBean
     private ProductRepository productRepository;
 
-    @InjectMocks
-    private ProductCatalogService productCatalogService;
+    @Autowired
+    private ProductServiceImpl productServiceImpl;
 
     @Test
-    public void givenValidIdWhenFindProductByIdThenReturnProduct() {
-        // Configuració
-        Product expectedProduct = new Product();
-        Mockito.when(productRepository.findById(Mockito.any()))
-                .thenReturn(Optional.of(expectedProduct));
+    public void findProductByIdWithValidId() {
 
-        // Acció
-        Product product = productCatalogService.findProductById(1L);
+        // Arrange
+        Long validId = 1L;
+        Product mockProduct = Product.builder()
+                .id(validId)
+                .name("Test Product")
+                .categoryId(2L)
+                .build();
+        
+        Mockito.when(productRepository.findProductById(validId)).thenReturn(Optional.of(mockProduct));
 
-        // Verificació
-        assertThat(product).isEqualTo(expectedProduct);
+        // Act
+        Optional<Product> productOptional = productServiceImpl.findProductById(validId);
+
+        // Assert
+        assertThat(productOptional.isPresent()).isTrue();
+        assertThat(productOptional.get()).usingRecursiveComparison().isEqualTo(mockProduct);
     }
 
     @Test
-    public void givenInvalidIdWhenFindProductByIdThenThrowException() {
-        // Configuració
-        Mockito.when(productRepository.findById(Mockito.any()))
-                .thenReturn(Optional.empty());
+    public void findProductByIdWithInvalidId() {
 
-        // Acció
-        Exception exception = assertThrows(ProductNotFoundException.class, () -> {
-            productCatalogService.findProductById(1L);
-        });
+        // Arrange
+        Long nonExistentId = 999L;
+        Mockito.when(productRepository.findProductById(nonExistentId)).thenReturn(Optional.empty());
 
-        // Verificació - Esperem que es llanci ProductNotFoundException
-        assertThat(exception.getMessage()).contains("Product not found");
+        // Act
+        Optional<Product> result = productServiceImpl.findProductById(nonExistentId);
+
+        // Assert
+        assertThat(result).isEmpty();
     }
 }
